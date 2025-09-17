@@ -19,7 +19,7 @@ O sistema é construído com as seguintes tecnologias:
 
 A raiz do projeto está organizada para separar as duas camadas da aplicação:
 
-
+```bash
 /sistema-vendas-web/
 |-- backend/ # Contém o projeto Django (API)
 | |-- apivendas/
@@ -40,7 +40,7 @@ A raiz do projeto está organizada para separar as duas camadas da aplicação:
 |
 |-- README.md
 
-
+````
 ---
 
 ## ⚙️ Backend (Django)
