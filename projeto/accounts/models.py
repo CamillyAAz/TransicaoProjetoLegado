@@ -45,7 +45,7 @@ class Funcionario(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'tb_funcionarios'
-        managed = False  # mantém compatibilidade com o banco legado
+        managed = True
 
     def __str__(self):
         return self.nome
