@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from clientes.views import ClienteViewSet
-from produtos.views import ProdutoViewSet, FornecedorViewSet
+from produtos.views import ProdutoViewSet, FornecedorViewSet, MovimentacaoEstoqueViewSet
 from accounts.views import FuncionarioCreateView
 from fornecedores.views import FornecedorViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -28,6 +28,7 @@ router = routers.DefaultRouter()
 router.register(r'clientes', ClienteViewSet, basename='cliente')
 router.register(r'produtos', ProdutoViewSet, basename='produto')
 router.register(r'fornecedores', FornecedorViewSet, basename='fornecedor')
+router.register(r'movimentacoes', MovimentacaoEstoqueViewSet, basename='movimentacao')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

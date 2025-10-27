@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Fornecedor, Produto
+from .models import Fornecedor, Produto, MovimentacaoEstoque
 
 
 @admin.register(Fornecedor)
@@ -14,3 +14,10 @@ class ProdutoAdmin(admin.ModelAdmin):
     list_display = ('id', 'descricao', 'preco', 'qtd_estoque', 'fornecedor')
     search_fields = ('descricao',)
     list_filter = ('fornecedor',)
+
+
+@admin.register(MovimentacaoEstoque)
+class MovimentacaoEstoqueAdmin(admin.ModelAdmin):
+    list_display = ('id', 'produto', 'tipo', 'quantidade', 'data_movimento', 'funcionario')
+    search_fields = ('produto__descricao',)
+    list_filter = ('tipo',)
