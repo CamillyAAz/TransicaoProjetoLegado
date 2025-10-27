@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'clientes',
     'produtos',
+    'fornecedores',
     'whatsapp',
 ]
 
