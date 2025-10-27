@@ -20,6 +20,7 @@ from rest_framework import routers
 from clientes.views import ClienteViewSet
 from produtos.views import ProdutoViewSet, FornecedorViewSet
 from accounts.views import FuncionarioCreateView
+from fornecedores.views import FornecedorViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
