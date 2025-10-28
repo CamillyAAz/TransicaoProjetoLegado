@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from clientes.views import ClienteViewSet
+#from clientes.views import ClienteViewSet
 from produtos.views import ProdutoViewSet, FornecedorViewSet
 from accounts.views import FuncionarioCreateView
 from fornecedores.views import FornecedorViewSet
@@ -25,13 +25,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 router = routers.DefaultRouter()
-router.register(r'clientes', ClienteViewSet, basename='cliente')
+#router.register(r'clientes', ClienteViewSet, basename='cliente')
 router.register(r'produtos', ProdutoViewSet, basename='produto')
 router.register(r'fornecedores', FornecedorViewSet, basename='fornecedor')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/clientes/', include('clientes.urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/accounts/register/', FuncionarioCreateView.as_view(), name='register'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
