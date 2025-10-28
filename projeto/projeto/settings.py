@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'produtos',
     'fornecedores',
     'whatsapp',
+    'consultaCliente',
 ]
 
 MIDDLEWARE = [
@@ -88,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bdvendas',
         'USER': 'root',
-        'PASSWORD': '12345678',
+        'PASSWORD': 'Jigsaw16',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -154,6 +155,7 @@ SPECTACULAR_SETTINGS = {
         {'name': 'Produtos', 'description': 'CRUD de produtos'},
         {'name': 'Fornecedores', 'description': 'CRUD de fornecedores'},
         {'name': 'Clientes', 'description': 'CRUD de clientes'},
+        {'name': 'Consulta de Clientes', 'description': 'Endpoints para consulta e busca de clientes'},
         {'name': 'Funcionários', 'description': 'Gerenciamento de funcionários'},
     ],
 }
