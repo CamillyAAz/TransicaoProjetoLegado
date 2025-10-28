@@ -1,4 +1,5 @@
 from rest_framework import viewsets, filters
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
@@ -6,6 +7,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from django.db import transaction
 from .models import Fornecedor, Produto, MovimentacaoEstoque
 from .serializers import FornecedorSerializer, ProdutoSerializer, MovimentacaoEstoqueSerializer
+from .services import ajustar_estoque
 
 
 @extend_schema_view(
@@ -145,14 +147,19 @@ class MovimentacaoEstoqueViewSet(viewsets.ModelViewSet):
     ordering_fields = ['data_movimento', 'quantidade']
     ordering = ['-data_movimento']
 
-    def perform_create(self, serializer):
-        with transaction.atomic():
-            movimentacao = serializer.save(funcionario=self.request.user)
-            produto = movimentacao.produto
-            if movimentacao.tipo == 'ENTRADA':
-                produto.qtd_estoque = produto.qtd_estoque + movimentacao.quantidade
-            elif movimentacao.tipo == 'SAIDA':
-                if produto.qtd_estoque < movimentacao.quantidade:
-                    raise ValidationError({'quantidade': 'Estoque insuficiente para saída.'})
-                produto.qtd_estoque = produto.qtd_estoque - movimentacao.quantidade
-            produto.save(update_fields=['qtd_estoque'])
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        dados = serializer.validated_data
+        movimentacao = ajustar_estoque(
+            produto=dados["produto"],
+            tipo=dados["tipo"],
+            quantidade=dados["quantidade"],
+            funcionario=request.user,
+            observacao=dados.get("observacao", "")
+        )
+
+        output = self.get_serializer(instance=movimentacao)
+        headers = self.get_success_headers(output.data)
+        return Response(output.data, status=201, headers=headers)

@@ -20,6 +20,11 @@ class ProdutoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("O preço não pode ser negativo.")
         return value
 
+    def validate_qtd_estoque(self, value):
+        if value < 0:
+            raise serializers.ValidationError("A quantidade em estoque não pode ser negativa.")
+        return value
+
 
 class MovimentacaoEstoqueSerializer(serializers.ModelSerializer):
     produto_descricao = serializers.CharField(source='produto.descricao', read_only=True)
@@ -52,8 +57,3 @@ class MovimentacaoEstoqueSerializer(serializers.ModelSerializer):
             if produto.qtd_estoque < quantidade:
                 raise serializers.ValidationError({'quantidade': 'Estoque insuficiente para saída.'})
         return attrs
-    
-    def validate_qtd_estoque(self, value):
-        if value < 0:
-            raise serializers.ValidationError("A quantidade em estoque não pode ser negativa.")
-        return value

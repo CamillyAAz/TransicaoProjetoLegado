@@ -19,6 +19,7 @@ from django.urls import path, include
 from rest_framework import routers
 from clientes.views import ClienteViewSet
 from produtos.views import ProdutoViewSet, FornecedorViewSet, MovimentacaoEstoqueViewSet
+from vendas.views import VendaViewSet
 from accounts.views import FuncionarioCreateView
 from fornecedores.views import FornecedorViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -29,6 +30,7 @@ router.register(r'clientes', ClienteViewSet, basename='cliente')
 router.register(r'produtos', ProdutoViewSet, basename='produto')
 router.register(r'fornecedores', FornecedorViewSet, basename='fornecedor')
 router.register(r'movimentacoes', MovimentacaoEstoqueViewSet, basename='movimentacao')
+router.register(r'vendas', VendaViewSet, basename='venda')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

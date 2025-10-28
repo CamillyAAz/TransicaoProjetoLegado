@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'produtos',
     'fornecedores',
     'whatsapp',
+    'vendas',
 ]
 
 MIDDLEWARE = [
@@ -155,6 +156,7 @@ SPECTACULAR_SETTINGS = {
         {'name': 'Fornecedores', 'description': 'CRUD de fornecedores'},
         {'name': 'Clientes', 'description': 'CRUD de clientes'},
         {'name': 'Funcionários', 'description': 'Gerenciamento de funcionários'},
+        {'name': 'Vendas', 'description': 'Registro de vendas e baixa de estoque'},
     ],
 }
 
