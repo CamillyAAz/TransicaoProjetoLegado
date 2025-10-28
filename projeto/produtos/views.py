@@ -1,9 +1,13 @@
 from rest_framework import viewsets, filters
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from .models import Fornecedor, Produto
-from .serializers import FornecedorSerializer, ProdutoSerializer
+from django.db import transaction
+from .models import Fornecedor, Produto, MovimentacaoEstoque
+from .serializers import FornecedorSerializer, ProdutoSerializer, MovimentacaoEstoqueSerializer
+from .services import ajustar_estoque
 
 
 @extend_schema_view(
@@ -102,3 +106,60 @@ class ProdutoViewSet(viewsets.ModelViewSet):
     search_fields = ['descricao']
     ordering_fields = ['descricao', 'preco', 'qtd_estoque']
     ordering = ['descricao']
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="Listar movimentações de estoque",
+        description="Retorna lista paginada de entradas e saídas com filtros.",
+        tags=['Estoque']
+    ),
+    create=extend_schema(
+        summary="Registrar movimentação",
+        description="Cria uma entrada ou saída de estoque e atualiza o produto.",
+        tags=['Estoque']
+    ),
+    retrieve=extend_schema(
+        summary="Buscar movimentação",
+        description="Retorna os detalhes de uma movimentação específica.",
+        tags=['Estoque']
+    ),
+    destroy=extend_schema(
+        summary="Remover movimentação",
+        description="Remove uma movimentação (não reverte estoque automaticamente).",
+        tags=['Estoque']
+    ),
+)
+class MovimentacaoEstoqueViewSet(viewsets.ModelViewSet):
+    """
+    API para controle de entrada e saída de produtos.
+
+    - Valida estoque suficiente para saídas
+    - Atualiza a quantidade do produto de forma atômica
+    - Registra o funcionário responsável
+    """
+    queryset = MovimentacaoEstoque.objects.select_related('produto').all()
+    serializer_class = MovimentacaoEstoqueSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['produto', 'tipo']
+    search_fields = ['produto__descricao']
+    ordering_fields = ['data_movimento', 'quantidade']
+    ordering = ['-data_movimento']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        dados = serializer.validated_data
+        movimentacao = ajustar_estoque(
+            produto=dados["produto"],
+            tipo=dados["tipo"],
+            quantidade=dados["quantidade"],
+            funcionario=request.user,
+            observacao=dados.get("observacao", "")
+        )
+
+        output = self.get_serializer(instance=movimentacao)
+        headers = self.get_success_headers(output.data)
+        return Response(output.data, status=201, headers=headers)
