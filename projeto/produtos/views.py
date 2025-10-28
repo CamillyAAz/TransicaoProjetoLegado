@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.decorators import action
+from django.db.models import Q, Case, When, Value, IntegerField
 from django.db import transaction
 from .models import Fornecedor, Produto, MovimentacaoEstoque
 from .serializers import FornecedorSerializer, ProdutoSerializer, MovimentacaoEstoqueSerializer
@@ -106,6 +108,65 @@ class ProdutoViewSet(viewsets.ModelViewSet):
     search_fields = ['descricao']
     ordering_fields = ['descricao', 'preco', 'qtd_estoque']
     ordering = ['descricao']
+
+    @action(detail=False, methods=['get'], url_path='buscar-inteligente', permission_classes=[IsAuthenticated])
+    @extend_schema(
+        summary="Busca inteligente de produtos/estoque",
+        description=(
+            "Busca por código (id), descrição ou fornecedor com ranking de relevância.\n"
+            "Parâmetros: q (obrigatório), low_stock=true|false, min_stock=int, fornecedor=int.\n"
+            "Ordena por relevância e retorna a lista de produtos compatíveis."
+        ),
+        tags=['Produtos']
+    )
+    def buscar_inteligente(self, request):
+        q = (request.query_params.get('q') or '').strip()
+        if not q:
+            return Response({'detail': 'Parâmetro q é obrigatório.'}, status=400)
+
+        # parâmetros auxiliares
+        low_stock = str(request.query_params.get('low_stock', '')).lower() in ('1', 'true', 'sim')
+        try:
+            min_stock = int(request.query_params.get('min_stock', 5))
+        except Exception:
+            min_stock = 5
+        fornecedor_id = request.query_params.get('fornecedor')
+
+        qs = Produto.objects.select_related('fornecedor')
+
+        # filtros por termos
+        code_filter = Q()
+        if q.isdigit():
+            code_filter = Q(id=int(q))
+
+        tokens = [t for t in q.split() if t]
+        desc_filter = Q()
+        for t in tokens:
+            desc_filter &= Q(descricao__icontains=t)
+
+        supplier_filter = Q(fornecedor__nome__icontains=q)
+
+        qs = qs.filter(code_filter | desc_filter | supplier_filter)
+
+        if fornecedor_id:
+            qs = qs.filter(fornecedor_id=fornecedor_id)
+
+        if low_stock:
+            qs = qs.filter(qtd_estoque__lte=min_stock)
+
+        # ranking de relevância
+        whens = []
+        if q.isdigit():
+            whens.append(When(id=int(q), then=Value(5)))
+        whens.append(When(descricao__istartswith=q, then=Value(4)))
+        whens.append(When(descricao__icontains=q, then=Value(3)))
+        whens.append(When(fornecedor__nome__icontains=q, then=Value(2)))
+
+        qs = qs.annotate(score=Case(*whens, default=Value(1), output_field=IntegerField()))
+        qs = qs.order_by('-score', 'descricao')
+
+        data = ProdutoSerializer(qs, many=True).data
+        return Response({'count': qs.count(), 'results': data})
 
 
 @extend_schema_view(
