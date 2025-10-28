@@ -5,7 +5,30 @@ A nova aplicação é dividida em duas camadas principais, facilitando o desenvo
 
 ---
 
-## 📌 Visão Geral da Arquitetura
+## � Quick Start com Docker (RECOMENDADO!)
+
+**A forma mais rápida de rodar o projeto completo:**
+
+```bash
+# 1. Build das imagens
+docker-compose build
+
+# 2. Sobe os containers (Django + MySQL)
+docker-compose up -d
+
+# 3. Acessa a aplicação
+open http://localhost:8000/api/docs/
+
+docker-compose down -v && docker-compose build --no-cache && docker-compose up -d
+```
+
+**Pronto! Sistema rodando em 3 comandos! 🎉**
+
+📖 **Documentação completa**: [`DOCKER_README.md`](./DOCKER_README.md)
+
+---
+
+## �📌 Visão Geral da Arquitetura
 
 O sistema é construído com as seguintes tecnologias:
 

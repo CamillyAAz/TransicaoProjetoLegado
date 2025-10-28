@@ -104,6 +104,10 @@ dmypy.json
 .env.local
 .env.*.local
 
+# Docker
+docker-compose.override.yml
+.dockerignore
+
 # Migrations (opcional - descomente se quiser ignorar)
 # */migrations/*.py
 # !*/migrations/__init__.py
