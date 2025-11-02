@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'fornecedores',
     'whatsapp',
     'vendas',
+    'relatorio',
+    'consultaClientes',
 ]
 
 MIDDLEWARE = [

@@ -40,7 +40,9 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/whatsapp/', include('whatsapp.urls')),
-    
+    path('api/relatorios/', include('relatorio.urls')),
+    path('api/relatorios/vendas/', include('relatorio.urls')),  # Nova rota para vendas
+    path('api/consulta-clientes/', include('consultaClientes.urls')),
     # Documentação da API
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
