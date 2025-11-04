@@ -1,9 +1,26 @@
+#!/bin/bash
 
 echo "Aguardando MySQL estar pronto..."
-while ! nc -z db 3306; do
-  sleep 0.5
-done
-echo "MySQL está pronto!"
+python << END
+import time
+import pymysql
+import os
+
+for i in range(30):
+    try:
+        conn = pymysql.connect(
+            host=os.getenv('DATABASE_HOST', 'db'),
+            user=os.getenv('DATABASE_USER', 'root'),
+            password=os.getenv('DATABASE_PASSWORD', '12345678'),
+            port=int(os.getenv('DATABASE_PORT', '3306'))
+        )
+        conn.close()
+        print("MySQL está pronto!")
+        break
+    except:
+        print(f"Tentativa {i+1}/30 - MySQL não está pronto ainda...")
+        time.sleep(1)
+END
 
 echo "Aplicando migrations..."
 python manage.py migrate --noinput

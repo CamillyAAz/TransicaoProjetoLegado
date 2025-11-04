@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'fornecedores',
     'whatsapp',
     'vendas',
+    'relatorio',
+    'consultaClientes',
 ]
 
 MIDDLEWARE = [
@@ -87,11 +89,11 @@ WSGI_APPLICATION = 'projeto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bdvendas',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.getenv('DATABASE_NAME', 'bdvendas'),
+        'USER': os.getenv('DATABASE_USER', 'root'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', '12345678'),
+        'HOST': os.getenv('DATABASE_HOST', 'db'),
+        'PORT': os.getenv('DATABASE_PORT', '3306'),
     }
 }
 

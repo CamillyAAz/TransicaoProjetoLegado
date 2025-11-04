@@ -25,8 +25,15 @@ RUN pip install --upgrade pip && \
 # Copia o projeto
 COPY ./projeto /app/
 
+# Copia o entrypoint
+COPY entrypoint.py /entrypoint.py
+RUN chmod +x /entrypoint.py
+
 # Expõe a porta 8000
 EXPOSE 8000
+
+# Define o entrypoint
+ENTRYPOINT ["python", "/entrypoint.py"]
 
 # Comando padrão
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
