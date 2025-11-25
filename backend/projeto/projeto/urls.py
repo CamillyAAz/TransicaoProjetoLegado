@@ -1,0 +1,49 @@
+"""
+URL configuration for projeto project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework import routers
+from produtos.views import ProdutoViewSet, FornecedorViewSet, MovimentacaoEstoqueViewSet
+from vendas.views import VendaViewSet
+from accounts.views import FuncionarioCreateView
+from fornecedores.views import FornecedorViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
+router = routers.DefaultRouter()
+#router.register(r'clientes', ClienteViewSet, basename='cliente')
+router.register(r'produtos', ProdutoViewSet, basename='produto')
+router.register(r'fornecedores', FornecedorViewSet, basename='fornecedor')
+router.register(r'movimentacoes', MovimentacaoEstoqueViewSet, basename='movimentacao')
+router.register(r'vendas', VendaViewSet, basename='venda')
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+    path('api/clientes/', include('clientes.urls')),
+    path('api/accounts/', include('accounts.urls')),
+    path('api/accounts/register/', FuncionarioCreateView.as_view(), name='register'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/whatsapp/', include('whatsapp.urls')),
+    path('api/relatorios/', include('relatorio.urls')),
+    path('api/consultas/', include('consultaClientes.urls')),
+    # Documentação da API
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+]

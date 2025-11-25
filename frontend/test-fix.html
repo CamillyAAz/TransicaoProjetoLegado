@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Employees Fix</title>
+</head>
+<body>
+    <h1>Testing Employees Component Fix</h1>
+    <button onclick="testEmployeesData()">Test Employees Data Structure</button>
+    <div id="result"></div>
+
+    <script>
+        // Mock the API response structure
+        const mockEmployeesData = {
+            count: 4,
+            next: null,
+            previous: null,
+            results: [
+                {
+                    id: 2,
+                    nome: "admin",
+                    rg: null,
+                    cpf: null,
+                    email: "admin@example.com",
+                    cargo: null,
+                    nivel_acesso: null,
+                    telefone: null,
+                    celular: null,
+                    cep: null,
+                    endereco: null,
+                    numero: null,
+                    complemento: null,
+                    bairro: null,
+                    cidade: null,
+                    estado: null,
+                    is_active: true,
+                    is_staff: false
+                }
+            ]
+        };
+
+        function testEmployeesData() {
+            try {
+                // Simulate the filtering logic from Employees component
+                const searchTerm = "";
+                const employees = mockEmployeesData.results; // This is the key fix!
+                
+                const filteredEmployees = employees.filter(
+                    (emp) =>
+                        emp.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        emp.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        emp.cpf?.includes(searchTerm)
+                );
+
+                // Test display logic
+                const displayData = filteredEmployees.map(emp => ({
+                    nome: emp.nome || 'N/A',
+                    cpf: emp.cpf || 'N/A',
+                    email: emp.email || 'N/A',
+                    cargo: emp.cargo || 'N/A',
+                    telefone: emp.celular || emp.telefone || 'N/A',
+                    cidade: emp.cidade || 'N/A'
+                }));
+
+                document.getElementById("result").innerHTML = `
+                    <h3>✅ Teste Realizado com Sucesso!</h3>
+                    <p><strong>Filtrados:</strong> ${filteredEmployees.length} funcionários</p>
+                    <p><strong>Dados para exibição:</strong></p>
+                    <pre>${JSON.stringify(displayData, null, 2)}</pre>
+                    <p style="color: green;">✅ Nenhum erro de "filter is not a function"</p>
+                    <p style="color: green;">✅ Nenhum erro de "Cannot read property 'toLowerCase' of null"</p>
+                `;
+
+            } catch (error) {
+                document.getElementById("result").innerHTML = `
+                    <h3>❌ Erro:</h3>
+                    <pre style="color: red;">${error.message}</pre>
+                `;
+            }
+        }
+
+        // Auto-test
+        testEmployeesData();
+    </script>
+</body>
+</html>
